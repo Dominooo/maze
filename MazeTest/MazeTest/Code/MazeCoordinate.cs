@@ -23,6 +23,9 @@ namespace MazeTest.Code
             set { y = value; }
         }
 
+        /// <summary>
+        /// sets the appropriate status 0-start, 1-path, 2-end
+        /// </summary>
         public int Status
         {
             get { return status; }

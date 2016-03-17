@@ -172,6 +172,7 @@ namespace MazeTest.Code
                 CurrentLocation = nextStep;
                 if (endReached)
                 {
+                    MazeCoordinates[MazeCoordinates.Count - 1].Status = 2;
                     break;
                 }
             }
@@ -273,7 +274,7 @@ namespace MazeTest.Code
             MazeCoordinate startingPoint = new MazeCoordinate();
             startingPoint.XCoordinate = x;
             startingPoint.YCoordinate = y;
-            startingPoint.Status = 1;
+            startingPoint.Status = 0;
 
             MazeCoordinates.Add(startingPoint);
 
