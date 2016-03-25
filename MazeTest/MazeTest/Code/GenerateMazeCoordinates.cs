@@ -7,17 +7,17 @@ namespace MazeTest.Code
 {
     public class GenerateMazeCoordinates
     {
-        MazeCoordinate CurrentLocation = new MazeCoordinate();
-        int CurrentDirection;
-        bool endReached = false;
-        List<MazeCoordinate> MazeCoordinates = new List<MazeCoordinate>();
-        int MazeSize;
-        int MaxSpaces;
-        int MinDistance;
-        Direction NewDirection = new Direction();
-        int NewDistance;
-        Direction direction1;
-        Direction direction2;
+        private MazeCoordinate CurrentLocation = new MazeCoordinate();
+        private int CurrentDirection;
+        private bool endReached = false;
+        private List<MazeCoordinate> MazeCoordinates = new List<MazeCoordinate>();
+        private int MazeSize;
+        private int MaxSpaces;
+        private int MinDistance;
+        private Direction NewDirection = new Direction();
+        private int NewDistance;
+        private Direction direction1;
+        private Direction direction2;
 
         private enum Direction
         {
