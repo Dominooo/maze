@@ -15,6 +15,7 @@ namespace MazeTest.Code
             down = 3,
             left = 4
         }
+        
         private SolutionCoordinate CurrentCoordinate = new SolutionCoordinate();
         private Direction CurrentOrientation = Direction.nowhere;
         private bool EndReached = false;

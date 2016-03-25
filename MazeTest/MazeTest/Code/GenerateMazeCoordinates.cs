@@ -7,6 +7,8 @@ namespace MazeTest.Code
 {
     public class GenerateMazeCoordinates
     {
+        bool BranchEndReached = false;
+        MazeCoordinate BranchStartLocation = new MazeCoordinate();
         private MazeCoordinate CurrentLocation = new MazeCoordinate();
         private int CurrentDirection;
         private bool endReached = false;
@@ -16,8 +18,8 @@ namespace MazeTest.Code
         private int MinDistance;
         private Direction NewDirection = new Direction();
         private int NewDistance;
-        private Direction direction1;
-        private Direction direction2;
+        private Direction Direction1;
+        private Direction Direction2;
 
         private enum Direction
         {
@@ -28,11 +30,92 @@ namespace MazeTest.Code
             left = 4
         }
 
-        public List<MazeCoordinate> GetMazeCoordinates()
+        public List<MazeCoordinate> GetMazeCoordinates(int mazeSize)
         {
+            MazeSize = mazeSize;
+            switch (MazeSize)
+            {
+                case 20:
+                    MaxSpaces = 3;
+                    MinDistance = 2;
+                    break;
+                case 30:
+                    MaxSpaces = 4;
+                    MinDistance = 2;
+                    break;
+                case 40:
+                    MaxSpaces = 4;
+                    MinDistance = 3;
+                    break;
+
+            }
+
             GetStartPosition();
             GenerateNextSteps();
+            for (int i = 0; i < 3; i++)
+            {
+                AddRandomBranches();
+            }
             return MazeCoordinates;
+        }
+
+        private void AddNextBranchSpaces(Direction newDirection, int distance)
+        {
+            for (int i = 0; i < distance; i++)
+            {
+                MazeCoordinate nextStep = GetNextBranchCoordinate(CurrentLocation, (int)newDirection);
+                nextStep.Status = 3;
+                MazeCoordinates.Add(nextStep);
+                CurrentLocation = nextStep;
+                if (BranchEndReached)
+                {
+                    break;
+                }
+            }
+        }
+
+        private void AddNextSpaces(Direction newDirection, int distance)
+        {
+            for (int i = 0; i < distance; i++)
+            {
+                MazeCoordinate nextStep = GetNextCoordinate(true, CurrentLocation, (int)newDirection);
+                nextStep.Status = 1;
+                MazeCoordinates.Add(nextStep);
+                CurrentLocation = nextStep;
+                if (endReached)
+                {
+                    MazeCoordinates[MazeCoordinates.Count - 1].Status = 2;
+                    break;
+                }
+            }
+        }
+
+        private void AddRandomBranches()
+        {
+            BranchEndReached = false;
+            bool validBranchStart = false;
+            while (validBranchStart == false)
+            {
+                validBranchStart = GetValidBranchStartPoint();
+            }
+
+            GenerateNextBranchSteps();
+
+        }
+
+        private void GenerateNextBranchSteps()
+        {
+            bool validDirection = false;
+            while (validDirection == false)
+            {
+                validDirection = GetRandomDirection(true);
+            }
+            AddNextBranchSpaces(NewDirection, NewDistance);
+            CurrentDirection = (int)NewDirection;
+            if (BranchEndReached == false)
+            {
+                GenerateNextBranchSteps();
+            }
         }
 
         private void GenerateNextSteps()
@@ -49,9 +132,99 @@ namespace MazeTest.Code
             {
                 GenerateNextSteps();
             }
+        }
+
+        private MazeCoordinate GetNextBranchCoordinate(MazeCoordinate location, int newDirection, int moveDistance = 1)
+        {
+            bool validMove = true;
+            int x = location.XCoordinate;
+            int y = location.YCoordinate;
+            switch (newDirection)
+            {
+                case 1:
+                    y -= moveDistance;
+                    if (y <= 0)
+                    {
+                        validMove = false;
+                    }
+                    else
+                    {
+                        if (moveDistance == 1)
+                        {
+                            if (MazeCoordinates.Exists(m => (m.XCoordinate == x) && (m.YCoordinate == y) && (m.Status == 1)))
+                            {
+                                BranchEndReached = true;
+                            }
+                        }
+
+                    }
+                    break;
+                case 2:
+                    x += moveDistance;
+                    if (x >= MazeSize - 1)
+                    {
+                        validMove = false;
+                    }
+                    else
+                    {
+                        if (moveDistance == 1)
+                        {
+                            if (MazeCoordinates.Exists(m => (m.XCoordinate == x) && (m.YCoordinate == y) && (m.Status == 1)))
+                            {
+                                BranchEndReached = true;
+                            }
+                        }
+                    }
+                    break;
+                case 3:
+                    y += moveDistance;
+                    if (y >= MazeSize - 1)
+                    {
+                        validMove = false;
+                    }
+                    else
+                    {
+                        if (moveDistance == 1)
+                        {
+                            if (MazeCoordinates.Exists(m => (m.XCoordinate == x) && (m.YCoordinate == y) && (m.Status == 1)))
+                            {
+                                BranchEndReached = true;
+                            }
+                        }
+                    }
+
+                    break;
+                case 4:
+                    x -= moveDistance;
+                    if (x <= 0)
+                    {
+                        validMove = false;
+                    }
+                    else
+                    {
+                        if (moveDistance == 1)
+                        {
+                            if (MazeCoordinates.Exists(m => (m.XCoordinate == x) && (m.YCoordinate == y) && (m.Status == 1)))
+                            {
+                                BranchEndReached = true;
+                            }
+                        }
+                    }
+
+                    break;
 
 
+            }
 
+            if (!validMove)
+            {
+                return null;
+            }
+            else
+            {
+                MazeCoordinate nextMove = new MazeCoordinate(x, y);
+                return nextMove;
+            }
         }
 
         private MazeCoordinate GetNextCoordinate(bool validate, MazeCoordinate location, int newDirection, int distance = 1)
@@ -162,23 +335,9 @@ namespace MazeTest.Code
 
         }
 
-        private void AddNextSpaces(Direction newDirection, int distance)
-        {
-            for (int i = 0; i < distance; i++)
-            {
-                MazeCoordinate nextStep = GetNextCoordinate(true, CurrentLocation, (int)newDirection);
-                nextStep.Status = 1;
-                MazeCoordinates.Add(nextStep);
-                CurrentLocation = nextStep;
-                if (endReached)
-                {
-                    MazeCoordinates[MazeCoordinates.Count - 1].Status = 2;
-                    break;
-                }
-            }
-        }
 
-        private bool GetRandomDirection()
+
+        private bool GetRandomDirection(bool isBranch = false)
         {
             int oppositeDirection = 0;
             switch (CurrentDirection)
@@ -201,26 +360,49 @@ namespace MazeTest.Code
             int possibleDirection = r.Next(1, 5);
             bool consecutiveTurns = false;
             int check = MazeCoordinates.Count();
-            if (direction1 == direction2 && (Direction)possibleDirection == direction1)
+            if (Direction1 == Direction2 && (Direction)possibleDirection == Direction1)
             {
                 consecutiveTurns = true;
             }
-            if (possibleDirection != oppositeDirection && GetNextCoordinate(true, CurrentLocation, possibleDirection, distance) != null && consecutiveTurns == false)
+            if (isBranch)
             {
-
-                if (direction1 != Direction.nowhere)
+                if (possibleDirection != oppositeDirection && GetNextBranchCoordinate(CurrentLocation, possibleDirection, distance) != null && consecutiveTurns == false)
                 {
-                    direction2 = direction1;
+
+                    if (Direction1 != Direction.nowhere)
+                    {
+                        Direction2 = Direction1;
+                    }
+                    Direction1 = (Direction)CurrentDirection;
+                    NewDirection = (Direction)possibleDirection;
+                    NewDistance = distance;
+                    return true;
                 }
-                direction1 = (Direction)CurrentDirection;
-                NewDirection = (Direction)possibleDirection;
-                NewDistance = distance;
-                return true;
+                else
+                {
+                    return false;
+                }
             }
             else
             {
-                return false;
+                if (possibleDirection != oppositeDirection && GetNextCoordinate(true, CurrentLocation, possibleDirection, distance) != null && consecutiveTurns == false)
+                {
+
+                    if (Direction1 != Direction.nowhere)
+                    {
+                        Direction2 = Direction1;
+                    }
+                    Direction1 = (Direction)CurrentDirection;
+                    NewDirection = (Direction)possibleDirection;
+                    NewDistance = distance;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
+            
         }
 
         private int GetRandomDistance()
@@ -287,6 +469,25 @@ namespace MazeTest.Code
                 nextStep.Status = 1;
                 MazeCoordinates.Add(nextStep);
                 CurrentLocation = nextStep;
+            }
+        }
+
+        private bool GetValidBranchStartPoint()
+        {
+            Random r = new Random();
+            int endPointX = r.Next(2, MazeSize - 2);
+            int endPointY = r.Next(2, MazeSize - 2);
+            CurrentDirection = 0;
+            if (MazeCoordinates.Exists(m => (m.XCoordinate == endPointX) && (m.YCoordinate == endPointY)))
+            {
+                return false;
+            }
+            else
+            {
+                BranchStartLocation = new MazeCoordinate(endPointX, endPointY);
+                BranchStartLocation.Status = 3;
+                CurrentLocation = new MazeCoordinate(endPointX, endPointY);
+                return true;
             }
         }
     }

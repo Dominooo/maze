@@ -24,7 +24,7 @@ namespace MazeTest.Code
         }
 
         /// <summary>
-        /// sets the appropriate status 0-start, 1-path, 2-end
+        /// sets the appropriate status 0-start, 1-path, 2-end, 3-branch
         /// </summary>
         public int Status
         {
